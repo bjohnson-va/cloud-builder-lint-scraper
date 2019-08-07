@@ -25,7 +25,10 @@ function checkBuildStatus() {
 			fi
 			break;
 		fi		
-	done <<< $output
+	done << EOF
+	$output
+EOF
 }
 
 checkBuildStatus $BUILD_ID;
+
