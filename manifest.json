@@ -10,17 +10,14 @@
     "128": "icons/icon128.png"
   },
   "default_locale": "en",
-  "background": {
-    "scripts": [
-      "src/bg/background.js"
-    ],
-    "persistent": true
-  },
-  "page_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "page action demo",
-    "default_popup": "src/page_action/page_action.html"
-  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://console.cloud.google.com/cloud-build/*"
+      ],
+      "js": ["src/content.js"]
+    }
+  ],
   "permissions": [
     "https://console.cloud.google.com/cloud-build/*"
   ]
