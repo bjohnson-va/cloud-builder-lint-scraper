@@ -1,17 +1,25 @@
 #!/bin/sh
 export CLOUDSDK_CORE_PROJECT=repcore-prod;
 
-#if [[ -z "$1" ]]; then
-#	echo "No file provided"
-#	echo "Usage:\n\trun.sh file-containing-build-ids"
-#	exit -1;
-#fi
-
-buildIds=$(gcloud builds list --format="get(ID)" --page-size=20)
-
-BUILD_ID='7a5e47a6-5388-4314-aa83-0a7563ea9b6c';
+if [[ -z "$1" ]]; then
+	echo "Please provide a number of builds to analyze."
+	echo "Usage:\n\trun.sh <num>"
+	exit -1;
+fi
+num=$1;
+buildIds=$(gcloud builds list --format="get(ID)" --page-size=$num --limit=$num)
 
 echo "buildId,status" > out.va
+echo "Build failures:" > failures.va
+
+function recordError() {
+	buildId=$1
+
+	echo "Recording lint failures for $buildId";
+	echo $buildId >> failures.va;
+	output=$(gcloud builds log $buildId | grep '"ng-lint": ERROR:');
+	echo "$output" >> failures.va;
+}
 
 function checkBuildStatus() {
 	buildId=$1
@@ -33,8 +41,9 @@ function checkBuildStatus() {
 				return;
 			elif [[ $x == *FAILURE ]];
 			then
-				echo "$buildId,FAILURE" >> out.va
-				return
+				echo "$buildId,FAILURE" >> out.va;
+				recordError $buildId;
+				return;
 			fi
 			return;
 		fi		
