@@ -1,3 +1,5 @@
 .idea
 *.swp
 out.va
+gcloud/failures.va
+gcloud/unique.csv
