@@ -3,7 +3,7 @@ export CLOUDSDK_CORE_PROJECT=repcore-prod;
 
 if [[ -z "$1" ]]; then
 	echo "Please provide a number of builds to analyze."
-	echo "Usage:\n\trun.sh <num>"
+	echo -e "Usage:\n\trun.sh <num>"
 	exit -1;
 fi
 num=$1;
@@ -16,8 +16,10 @@ function recordError() {
 	buildId=$1
 
 	echo "Recording lint failures for $buildId";
+
 	echo $buildId >> failures.va;
 	output=$(gcloud builds log $buildId | grep '"ng-lint": ERROR:');
+	output=grep -v "_generated" | echo "$output";
 	echo "$output" >> failures.va;
 }
 
